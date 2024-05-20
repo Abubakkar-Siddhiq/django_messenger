@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+@layer base {
+    .message{
+        @apply max-w-[70%] flex gap-4
+    }
+
+    .message > img {
+        @apply w-8 h-8 rounded-full object-cover
+    }
+
+    .message > .texts {
+        @apply flex flex-col gap-1
+    }
+
+    .message > .texts > p{
+        @apply bg-slate-700/90 rounded-lg p-2
+    }
+
+    .message > .texts > span{
+        @apply text-xs font-thin
+    }
+
+    .message.own{
+        @apply self-end
+    }
+
+    .message.own > .texts > span{
+        @apply text-end mr-3
+    }
+
+    .message.own > .texts > p {
+        @apply bg-blue-500/70
+    }
+}

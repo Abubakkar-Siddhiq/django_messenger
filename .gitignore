@@ -1,0 +1,88 @@
+# For Frontend
+# Logs
+forntend/logs
+forntend/*.log
+forntend/npm-debug.log*
+
+forntend/node_modules
+forntend/dist
+forntend/dist-ssr
+forntend/*.local
+
+# Editor directories and files
+forntend/.vscode/*
+forntend/!.vscode/extensions.json
+forntend/.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Ignore for both backend and frontend
+
+# Logs
+*.log
+*.log.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignore node_modules and npm cache
+node_modules/
+npm-cache/
+
+# Ignore build directories
+build/
+dist/
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore Python bytecode
+*.py[cod]
+__pycache__/
+*.so
+
+# Ignore Virtual Environment directories
+venv/
+.env/
+.venv/
+ENV/
+
+# Ignore environment variable files
+.env
+.env.*
+
+# Ignore test coverage results
+coverage/
+*.cover
+
+# Ignore SQLite database files
+*.sqlite3
+
+# Ignore media and static files
+media/
+staticfiles/
+static/
+
+# Ignore Django migrations
+*/migrations/*
+
+# Ignore IDE/editor config files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Ignore backend specific files
+backend/*.log
+backend/*.pyc
+backend/__pycache__/
+backend/env/
+backend/venv/
+backend/.env
+backend/.venv
+backend/ENV/
