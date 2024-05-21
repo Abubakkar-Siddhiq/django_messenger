@@ -1,3 +1,4 @@
+import { useOtherUser } from "../../utils/appStore"
 function ChatBubble({content, time}) {
   return (
     <div className="texts">
@@ -8,9 +9,10 @@ function ChatBubble({content, time}) {
 }
 
 function ReplyBubble({content, time}){
+    const { otherUser } = useOtherUser()
     return(
         <>
-            <img src="../../src/assets/pfp.jpg" alt="" />
+            <img src={otherUser.avatar} alt="" />
             <div className="texts">
                 <p>{content}</p>
                 <span>{time}</span>
