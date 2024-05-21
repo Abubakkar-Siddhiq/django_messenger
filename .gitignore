@@ -79,6 +79,7 @@ static/
 
 # Ignore backend specific files
 backend/*.log
+backend/*/migrations
 backend/*.pyc
 backend/__pycache__/
 backend/env/

@@ -104,7 +104,7 @@ export const useSearch = create((set) => ({
 }))
 
 export const useFriends = create((set) => ({
-  friendsList: '',
+  friendsList: [],
   setFriendsList: (friendsList) => set({ friendsList })
 }))
 

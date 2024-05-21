@@ -1,6 +1,8 @@
 import { useOtherUser, useSearch, useFriends } from '../utils/appStore'
 import useFetch from '../hooks/useFetch'
 import { useEffect, useState } from 'react'
+import { RotateCcw } from 'lucide-react'
+
 function ChatList() {
   const { setOtherUser } = useOtherUser()
   const { showSearch } = useSearch()
@@ -37,7 +39,12 @@ function ChatList() {
 
   return (
     <div className={`flex-1 overflow-y-scroll scroll-smooth  px-3 gap-5 ${ showSearch ? 'hidden' : '' }`}>
-      <h1 className='px-3 pb-2 text-lg font-semibold'>Friends: </h1>
+      <div className="px-3 pb-2 flex items-center justify-around">
+        <h1 className='text-xl font-semibold mr-auto'>Friends: </h1>
+        <button onClick={() => {
+          getFriends()
+        }}><RotateCcw size={16} /></button>
+      </div>
       <div className="flex flex-col gap-2">
       {
       friends && friends.map((item, index) => (
