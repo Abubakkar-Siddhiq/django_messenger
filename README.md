@@ -6,6 +6,7 @@ Django Messenger is a chat application built with React and Django REST Framewor
   * JWT Authentication
   * Django Channels for WebSocket Communication
   * User Relations
+  * Zustand for State management
   * etc., 
 
 ## Preview
