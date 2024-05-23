@@ -7,7 +7,7 @@ export default function ChatList() {
   const { user } = useAuthStore()
   const { setOtherUser } = useOtherUser()
   const { showSearch } = useSearch()
-  const { friendsList, setFriendsList } = useFriends()
+  const { setFriendsList } = useFriends()
   const [friends, setFriends] = useState()
   const [uuid, setUUID] = useState()
   const api = useFetch()
