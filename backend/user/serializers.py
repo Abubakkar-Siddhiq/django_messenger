@@ -1,7 +1,9 @@
 from rest_framework import serializers
+from django.db.models import Q
 from django.contrib.auth.password_validation import validate_password
 from rest_framework.validators import UniqueValidator
 from .models import User
+from chat.models import Message
 
 # Authentication and Authorization Serializers
 class RegisterSerializer(serializers.ModelSerializer):
@@ -103,6 +105,33 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 
 # Other Serializers
 class UserProfileSerializer(serializers.ModelSerializer):    
+    is_friend = serializers.SerializerMethodField()
+    last_message = serializers.SerializerMethodField()
+    unread_count = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ['username', 'name', 'avatar', 'bio']
+        fields = ['username', 'name', 'avatar', 'bio', 'is_friend', 'last_message', 'unread_count']
+
+    def get_is_friend(self, obj):
+        request_user = self.context['request'].user
+        return request_user.friends.filter(id=obj.id).exists()
+
+    def get_last_message(self, obj):
+        request_user = self.context['request'].user
+        last_message = Message.objects.filter(
+            Q(sender=request_user, receiver=obj) | Q(sender=obj, receiver=request_user)
+        ).order_by('-created_at').first()
+        
+        if last_message:
+            return {
+                'content': last_message.content,
+                'sender': last_message.sender.username,
+                'receiver': last_message.receiver.username,
+                'created_at': last_message.created_at.isoformat(),
+            }
+        return None
+
+    def get_unread_count(self, obj):
+        request_user = self.context['request'].user
+        return Message.objects.filter(sender=obj, receiver=request_user, is_read=False).count()
