@@ -37,15 +37,23 @@ function SearchList() {
         <div key={index}>
           {
             item.username === user.username ? '' :
-            <div className="flex items-center align-middle gap-5 cursor-pointer border border-transparent border-b-slate-600 p-2" onClick={() => {
+            <div className="flex items-center align-middle gap-5 cursor-pointer border border-transparent border-b-slate-600 p-2 truncate" onClick={() => {
               setSearchQuery('')
               setOtherUser(item)
               }}>
               <img src={item.avatar} className="w-12 h-12 rounded-full" alt="" />
                 <div className="texts flex-1">
                   <span>{item.name}</span><br />
-                  {/* <span className="text-xs font-light">@{item.username}</span> */}
-                  <p className='font-light'>Start a Conversation 👋</p>
+                  {
+                    item.is_friend === true ? (
+                      item.last_message !== null ? (
+                        <span className='font-light flex gap-2'>
+                          <p>{item.last_message.sender === user.username ? "You: " : ""}</p>
+                          <p>{item.last_message.content}</p>
+                        </span>
+                      ) : <p className='font-light'>Start with a Hi! 👋</p>
+                    ) : <span className="text-xs font-light">@{item.username}</span>
+                  }
                 </div>
                 {
                   friendsList && friendsList.includes(item.username) ? '' :
