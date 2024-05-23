@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect, useMemo } from "react"
-import { Laugh, Phone, Video, Image, Camera, Mic, SendHorizontal, MessageSquareQuote, EllipsisVertical } from "lucide-react"
+import { useState, useRef, useEffect } from "react"
+import { Laugh, Phone, Video, Image, Camera, Mic, SendHorizontal, MessageSquareQuote, EllipsisVertical, HardDriveDownload } from "lucide-react"
 import EmojiPicker from "emoji-picker-react"
 import useFetch from "../../hooks/useFetch"
 import { ChatBubble, ReplyBubble } from "./ChatBubble"
@@ -17,10 +17,23 @@ const Chat = () => {
   const [messages, setMessages] = useState([])
   const [uuid, setUUID] = useState(null)
   const [roomId, setRoomId] = useState(null)
+  const [ouTyping, setOuTyping] = useState(false)
   const endRef = useRef(null)
 
   const api = useFetch()
-  // const { formatDistanceToNow } = dateFns
+
+  const readMessages = async (msg_id) => {
+    try {
+      const { response, data } = await api(`chat/mark_message_as_read/`, 'POST', {'msg_id': msg_id})
+      if (response.status === 200) {
+        console.log(data)
+      } else {
+        console.error('Error marking messages read:', response.status)
+      }
+    } catch (error) {
+      console.error('Error messages read:', error)
+    }
+  }
 
   const getRoomId = async (otherUser) => {
     try {
@@ -37,7 +50,6 @@ const Chat = () => {
 
   const getMessages = async (roomId) => {
     try {
-      console.log('Fetching messages for room:', roomId)
       const { response, data } = await api(`chat/room/${roomId}`)
       if (response.status === 200) {
         setMessages(data)
@@ -78,6 +90,11 @@ const Chat = () => {
     }
 
     otherUser && fetchRoomAndMessages()
+    messages && messages.map((message) => {
+      if(message.is_read === false){
+        readMessages(message.id)
+      }
+    })
   }, [otherUser])
 
   useEffect(() => {
@@ -92,7 +109,7 @@ const Chat = () => {
     }
   }, [messages])
 
-  const { sendJsonMessage, lastMessage, readyState } = useWebSocket(
+  const { sendJsonMessage, lastMessage } = useWebSocket(
     uuid && roomId ? `ws://127.0.0.1:8000/ws/chatroom/${roomId}` : null,
     {
       queryParams: { uuid },
@@ -100,16 +117,35 @@ const Chat = () => {
       onClose: () => console.log('WebSocket connection closed'),
       onError: (error) => console.error('WebSocket error:', error),
       onMessage: (event) => {
-        const message = JSON.parse(event.data)
-        setMessages((prevMessages) => [...prevMessages, message])
+        try {
+          const message = JSON.parse(event.data) // Use event.data for received data
+          if(message.action == 'message'){
+            // readMessages(message)
+            console.log(message)
+            setMessages((prevMessages) => [...prevMessages, message.data])
+          }
+          if(message.action === 'type' && message.user === otherUser.username){
+            setOuTyping(message.typing)
+          }
+          // ... process the message
+      } catch (error) {
+          console.error("Error parsing JSON:", error)
+          // Handle the error (e.g., display an error message to the user)
+      }
       },
     }
   )
 
   useEffect(() => {
     if (lastMessage !== null) {
-      const message = JSON.parse(lastMessage.data)
-      setMessages((prevMessages) => [...prevMessages, message.data])
+      try {
+        const message = JSON.parse(lastMessage.data)
+        if (message.data && message.data.action === 'message') {
+          setMessages((prevMessages) => [...prevMessages, message.data])
+        }
+      } catch (error) {
+        console.error("Error parsing JSON:", error)
+      }
     }
   }, [lastMessage])
 
@@ -121,7 +157,7 @@ const Chat = () => {
     e.preventDefault()
     if(text){
       try{
-        sendJsonMessage(text)
+        sendJsonMessage({ 'action': 'message', 'content': text, 'receiver': otherUser.username })
         setText("")
       } catch (err) {
         console.error(err)
@@ -129,15 +165,30 @@ const Chat = () => {
     }
   }
 
+  let typingTimeout = null
+
+   const handleInputChange = (e) => {
+    setText(e.target.value)
+    sendJsonMessage({'action': 'type', 'typing':true, 'user': otherUser.username})
+
+
+    clearTimeout(typingTimeout)
+    typingTimeout = setTimeout(() => {
+      sendJsonMessage({'action': 'type', 'typing':false, 'user': otherUser.username})
+    }, 1000)
+   }
+
   return (
       otherUser ? (
         <div className="h-full flex flex-col flex-2 border border-transparent border-l-slate-600 border-r-slate-600">
           <div className="px-5 py-3 flex items-center justify-between border border-transparent border-b-slate-600">
             <div className="flex items-center gap-5 cursor-pointer" onClick={toggleDetail }>
               <img src={otherUser.avatar} className="w-10 rounded-full object-cover" alt="" />
-              <div className="flex flex-col gap-1">
-                <span className="text-lg font-semibold">{otherUser.name}</span>
-                {/* <p className="text-sm font-light text-slate-400">Lorem ipsumahdjasdkj asdhjkads</p> */}
+              <div className="flex gap-2 items-center">
+                <span className="font-semibold text-lg">{otherUser.name}</span>
+                <span className={`text-md font-light transition-opacity duration-500 ${ouTyping ? 'opacity-100 visible' : 'opacity-0 visible'}`}>
+                  is typing...
+                </span>
               </div>
             </div>
             <div className="flex gap-5">
@@ -146,9 +197,10 @@ const Chat = () => {
               <EllipsisVertical size={22} className="cursor-pointer" />
             </div>
           </div>
-          <div className="flex flex-col flex-1 p-5 gap-5 overflow-y-scroll scroll-smooth">
+          <div className="flex flex-col flex-1 p-5 gap-5 overflow-y-scroll scroll-smooth transition-all ease-in delay-[500]">
             {messages && messages.length > 0 ? (
               messages.map((item, index) => (
+                
                 <div className={ item.sender === user.username ? "message own" : item.sender === otherUser.username ? "message" : "" } key={index}>
                   { item.sender === user.username ? <ChatBubble content={item.content} time={formatTimeAgo(item.created_at)} /> : item.sender === otherUser.username ? <ReplyBubble content={item.content} time={formatTimeAgo(item.created_at)} /> : ""  }
                 </div>
@@ -165,7 +217,7 @@ const Chat = () => {
               <Mic size={20} />
             </div>
             <form className="w-full flex justify-evenly gap-4 items-center" onSubmit={handleFormSubmit}>
-              <input type="text" value={text} placeholder="Type a message...." onChange={(e) => setText(e.target.value)} className="flex-1 bg-slate-700/60 text-base border-none outline-none px-3 py-2 rounded-md" />
+              <input type="text" value={text} placeholder="Type a message...." onChange={handleInputChange} className="flex-1 bg-slate-700/60 text-base border-none outline-none px-3 py-2 rounded-md" />
               <div className="cursor-pointer relative" onClick={() => {setIsEmojiPickerOpened((prev) => !prev)}}>
                   <Laugh size={24} />
                   <div className="absolute bottom-12 left-0">
