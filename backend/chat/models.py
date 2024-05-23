@@ -10,6 +10,8 @@ class ChatRoom(models.Model):
     
 class Message(models.Model):
     room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE)
-    sender = models.ForeignKey(User, to_field='username', on_delete=models.CASCADE, related_name='sent_messages')
+    sender = models.ForeignKey(User, to_field='username', on_delete=models.CASCADE, related_name='sent_message')
+    receiver = models.ForeignKey(User, to_field='username', on_delete=models.CASCADE, related_name='received_message', default=None)
     content = models.CharField(max_length=300)
     created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
