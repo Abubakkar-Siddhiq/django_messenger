@@ -70,7 +70,6 @@ class UserProfile(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        print(self.request.user.username)
         return self.queryset.filter(username=self.kwargs['username'])
     
 class SearchUser(generics.ListAPIView):
@@ -80,12 +79,11 @@ class SearchUser(generics.ListAPIView):
         search_term = self.request.query_params.get('search', None)
 
         if search_term:
-            queryset = queryset | User.objects.filter(username__icontains=search_term)
+            queryset = User.objects.filter(username__icontains=search_term).order_by('username')
 
         return queryset
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(data=serializer.data)
-    
+        serializer = self.get_serializer(queryset, many=True, context={'request': request})
+        return Response(data=serializer.data) 
