@@ -1,4 +1,4 @@
-from django.db.models import Q, F, Max
+from django.db.models import Q, Max, Count
 from django.db.models.functions import Coalesce
 from rest_framework import generics
 from rest_framework.decorators import api_view, permission_classes
@@ -51,6 +51,30 @@ def GetOrCreateChatroom(request, username):
     members_data = UserProfileSerializer(chatroom.members.all(), many=True, context={'request': request}).data
     return Response({'chatroom': chatroom.id, 'members': members_data})
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def RemoveFriend(request, username):
+    user = request.user
+    friend = user.friends.get(username=username)
+    friend_chatroom = None
+    print(friend)
+    chatrooms = user.chat_rooms.all()
+    for chatroom in chatrooms:
+        print(chatroom.members.all())
+        if friend in chatroom.members.all():
+            friend_chatroom = chatroom
+            print(friend_chatroom)
+            break
+
+    if friend_chatroom:
+        Message.objects.filter(room=friend_chatroom.id).delete()
+        friend_chatroom.delete()
+        user.friends.remove(friend)
+        return Response({'message': 'Successfully Deleted!'})
+
+    return Response({'message': 'Error Deleting!'})
+
+    
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def ListFriends(request):

@@ -1,9 +1,25 @@
 import { X, UserMinus } from "lucide-react"
 import { useAppLayout, useOtherUser } from "../utils/appStore"
+import useFetch from '../hooks/useFetch'
 function Detail() {
 
   const { showDetail, toggleDetail } = useAppLayout()
-  const { otherUser } = useOtherUser()
+  const { otherUser, setOtherUser } = useOtherUser()
+  const api = useFetch()
+  
+  const removeFriend = async () => {
+    try {
+      let { response, data } = await api(`chat/friend/remove/${otherUser.username}`)
+      if(response.status == 200){
+        setOtherUser('')
+        toggleDetail()
+      } else {
+        console.log('Error Removing Friend! \n Response: ', response, '\n Data: ', data)
+      }
+    } catch (error) {
+      console.error("Error fetching friends", error)
+    }
+  }
 
   return (
     <div className={`flex-1 flex flex-col transition-opacity duration-500 ${ showDetail ? '' : 'hidden' }`}>
@@ -22,7 +38,7 @@ function Detail() {
       <div className="p-5 flex-1 flex flex-col justify-end gap-6">
         <button className="flex items-center gap-3 cursor-pointer border-none outline-none bg-red-600 hover:bg-red-700 py-1 px-6 self-center rounded-lg">
           <UserMinus size={16} />
-          <span className="font-light">Remove Friend</span>
+          <span className="font-light" onClick={() => removeFriend()}>Remove Friend</span>
         </button>
       </div>
     </div>
