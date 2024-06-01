@@ -10,9 +10,8 @@ Django Messenger is a chat application built with React and Django REST Framewor
   * Realtime Chat updates and Notifications
   * etc., 
 
+## For Full Demo: [https://www.youtube.com/watch?v=GjzBtjxXUOo](https://www.youtube.com/watch?v=GjzBtjxXUOo)
 ## Preview
-
-#### For Full Demo: [https://www.youtube.com/watch?v=GjzBtjxXUOo](https://www.youtube.com/watch?v=GjzBtjxXUOo)
 
    * The Main Layout (Chat Area)
      ![image](https://github.com/Abubakkar-Siddhiq/django_messenger/assets/148426945/74f59b51-b67e-4859-a91f-b12861fe3fa5)
