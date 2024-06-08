@@ -35,57 +35,21 @@ Django Messenger is a chat application built with React and Django REST Framewor
      ![image](https://github.com/Abubakkar-Siddhiq/django_messenger/assets/148426945/87d9d67d-aae0-4152-adc8-72d4546e5c4f)
 
  
-### Installation for Frontend
+## Getting Started
 
-1. Clone the repository:
+Clone this repository to your local machine and rename the `.env.example` file found in the frontend directory of the project to `.env` and update the environment variables accordingly.
+Refer this [blog](https://blog.logrocket.com/firebase-cloud-storage-firebase-v9-react/) for configuring Firebase.
 
-   ```bash
-   git clone https://github.com/Abubakkar-Siddhiq/django_messenger.git
-   ```
+Linux:
+```
+$ docker-compose up
+```
 
-2. Navigate to the project directory:
+Windows:
+```
+C:\folder\django_messenger> docker compose up
+```
 
-   ```bash
-   cd django_messenger/frontend
-   ```
+Navigate to http://localhost:8080/ and start texting...
 
-3. Install dependencies:
-   ```bash
-   npm install
-   ```
-4. Configure Firebase:
-    - Configure firebase as Said in this [Blog](https://blog.logrocket.com/firebase-cloud-storage-firebase-v9-react/)
-    - And place the Firebase Credentials in a .env File
-  
-6. run the application in development mode, use the following command:
-    ```bash
-      npm run dev
-    ```
-This will start the development server, and you can access the application at [http://localhost:5173/](http://localhost:5173/)
-
-
-### Installation for Backend
-
-1. Navigate to the project directory:
-
-   ```bash
-   cd django_messenger/backend
-   ```
-2.  Install dependencies:
-     ```bash
-      pip install -r requirements.txt
-     ```
-3.  Migrate the DB:
-
-    ```bash
-     ~$ python manage.py makemigrations
-    
-     ~$ python manage.py migrate
-    ```
-4. Now start the server:
-    ```bash
-      python manage.py runserver
-    ```
-    This will start the development API server, and you can access the application at [http://localhost:8000/](http://localhost:8000/)
-
-# Thank You 💖
+## Thank You 💖
