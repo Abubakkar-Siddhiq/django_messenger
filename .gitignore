@@ -54,7 +54,7 @@ ENV/
 
 # Ignore environment variable files
 .env
-.env.*
+.env.local
 
 # Ignore test coverage results
 coverage/
